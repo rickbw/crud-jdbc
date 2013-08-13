@@ -9,19 +9,19 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 
-public abstract class StatementFactory<RESPONSE> {
+public final class StatementFactory {
 
     private final String statementString;
     private final ImmutableList<Object> statementParams;
 
 
-    protected StatementFactory(final String statementString, final Iterable<?> statementParams) {
+    public StatementFactory(final String statementString, final Iterable<?> statementParams) {
         Preconditions.checkArgument(!statementString.isEmpty(), "empty statement string");
         this.statementString = statementString;
         this.statementParams = ImmutableList.copyOf(statementParams);
     }
 
-    public final Statement<RESPONSE> prepareStatement(final Connection connection) throws SQLException {
+    public PreparedStatement prepareStatement(final Connection connection) throws SQLException {
         final PreparedStatement statement = connection.prepareStatement(this.statementString);
         try {
             final Iterator<Object> params = this.statementParams.iterator();
@@ -39,9 +39,7 @@ public abstract class StatementFactory<RESPONSE> {
             statement.close();
             throw err;
         }
-
-        final Statement<RESPONSE> results = createStatement(statement);
-        return results;
+        return statement;
     }
 
     @Override
@@ -55,7 +53,7 @@ public abstract class StatementFactory<RESPONSE> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final StatementFactory<?> other = (StatementFactory<?>) obj;
+        final StatementFactory other = (StatementFactory) obj;
         if (!this.statementParams.equals(other.statementParams)) {
             return false;
         }
@@ -84,7 +82,5 @@ public abstract class StatementFactory<RESPONSE> {
         buf.append(']');
         return buf.toString();
     }
-
-    protected abstract Statement<RESPONSE> createStatement(PreparedStatement stmt) throws SQLException;
 
 }

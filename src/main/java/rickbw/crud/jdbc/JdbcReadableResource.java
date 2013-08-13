@@ -1,6 +1,7 @@
 package rickbw.crud.jdbc;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
@@ -17,17 +18,17 @@ import rx.Subscription;
 import rx.util.functions.Func1;
 
 
-public final class QueryReadableResource implements ReadableResource<ResultSet> {
+public final class JdbcReadableResource implements ReadableResource<ResultSet> {
 
     private final DataSource connectionProvider;
-    private final StatementFactory<ResultSet> queryFactory;
+    private final StatementFactory queryFactory;
 
     private final ExecutorService executor;
 
 
-    public QueryReadableResource(
+    public JdbcReadableResource(
             final DataSource connectionProvider,
-            final StatementFactory<ResultSet> queryFactory,
+            final StatementFactory queryFactory,
             final ExecutorService executor) {
         this.connectionProvider = Preconditions.checkNotNull(connectionProvider);
         this.queryFactory = Preconditions.checkNotNull(queryFactory);
@@ -66,7 +67,7 @@ public final class QueryReadableResource implements ReadableResource<ResultSet> 
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final QueryReadableResource other = (QueryReadableResource) obj;
+        final JdbcReadableResource other = (JdbcReadableResource) obj;
         if (!this.connectionProvider.equals(other.connectionProvider)) {
             return false;
         }
@@ -108,9 +109,9 @@ public final class QueryReadableResource implements ReadableResource<ResultSet> 
                  */
                 final Connection connection = connectionProvider.getConnection();
                 try {
-                    final Statement<ResultSet> statement = queryFactory.prepareStatement(connection);
+                    final PreparedStatement query = queryFactory.prepareStatement(connection);
                     try {
-                        final ResultSet resultSet = statement.call();
+                        final ResultSet resultSet = query.executeQuery();
                         try {
                             while (resultSet.next() && !this.cancelled) {
                                 this.observer.onNext(resultSet);
@@ -119,7 +120,7 @@ public final class QueryReadableResource implements ReadableResource<ResultSet> 
                             resultSet.close();
                         }
                     } finally {
-                        statement.close();
+                        query.close();
                     }
                 } finally {
                     connection.close();
