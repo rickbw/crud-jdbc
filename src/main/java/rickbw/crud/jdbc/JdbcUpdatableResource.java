@@ -9,6 +9,7 @@ import java.util.concurrent.Future;
 import javax.sql.DataSource;
 
 import rickbw.crud.UpdatableResource;
+import rickbw.crud.adapter.FutureSubscription;
 import com.google.common.base.Preconditions;
 
 import rx.Observable;
@@ -48,7 +49,7 @@ public final class JdbcUpdatableResource implements UpdatableResource<Iterable<?
             public Subscription call(final Observer<Integer> observer) {
                 final Task task = new Task(updateFactory, observer);
                 final Future<?> taskResult = executor.submit(task);
-                final Subscription sub = new TaskSubscription(taskResult);
+                final Subscription sub = new FutureSubscription(taskResult);
                 return sub;
             }
         });
@@ -125,20 +126,6 @@ public final class JdbcUpdatableResource implements UpdatableResource<Iterable<?
             } catch (final SQLException sqlx) {
                 this.observer.onError(sqlx);
             }
-        }
-    }
-
-    private static final class TaskSubscription implements Subscription {
-        private final Future<?> taskResult;
-
-        public TaskSubscription(final Future<?> taskResult) {
-            this.taskResult = taskResult;
-            assert null != this.taskResult;
-        }
-
-        @Override
-        public void unsubscribe() {
-            this.taskResult.cancel(false);
         }
     }
 

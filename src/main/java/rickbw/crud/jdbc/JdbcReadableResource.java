@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 import javax.sql.DataSource;
 
 import rickbw.crud.ReadableResource;
+import rickbw.crud.adapter.FutureSubscription;
 import com.google.common.base.Preconditions;
 
 import rx.Observable;
@@ -137,20 +138,18 @@ public final class JdbcReadableResource implements ReadableResource<ResultSet> {
         }
     }
 
-    private static final class TaskSubscription implements Subscription {
+    private static final class TaskSubscription extends FutureSubscription {
         private final Task task;
-        private final Future<?> taskResult;
 
         public TaskSubscription(final Task task, final Future<?> taskResult) {
+            super(taskResult);
             this.task = task;
             assert null != this.task;
-            this.taskResult = taskResult;
-            assert null != this.taskResult;
         }
 
         @Override
         public void unsubscribe() {
-            this.taskResult.cancel(false);
+            super.unsubscribe();
             this.task.cancel();
         }
     }
