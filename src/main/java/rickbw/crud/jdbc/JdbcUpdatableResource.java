@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
 import javax.sql.DataSource;
 
 import rickbw.crud.UpdatableResource;
-import rickbw.crud.adapter.FutureSubscription;
+import rickbw.crud.util.rx.FutureSubscription;
 import com.google.common.base.Preconditions;
 
 import rx.Observable;
