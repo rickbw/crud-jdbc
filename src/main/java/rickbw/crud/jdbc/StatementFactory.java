@@ -37,6 +37,7 @@ public final class StatementFactory {
     }
 
     public PreparedStatement prepareStatement(final Connection connection) throws SQLException {
+        @SuppressWarnings("resource")   // don't close on success
         final PreparedStatement statement = connection.prepareStatement(this.statementString);
         try {
             final Iterator<Object> params = this.statementParams.iterator();
@@ -69,10 +70,11 @@ public final class StatementFactory {
             return false;
         }
         final StatementFactory other = (StatementFactory) obj;
-        if (!this.statementParams.equals(other.statementParams)) {
+        if (!this.statementString.equals(other.statementString)) {
+            // Check String before parameters: probably cheaper
             return false;
         }
-        if (!this.statementString.equals(other.statementString)) {
+        if (!this.statementParams.equals(other.statementParams)) {
             return false;
         }
         return true;
@@ -82,8 +84,8 @@ public final class StatementFactory {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + this.statementParams.hashCode();
         result = prime * result + this.statementString.hashCode();
+        result = prime * result + this.statementParams.hashCode();
         return result;
     }
 

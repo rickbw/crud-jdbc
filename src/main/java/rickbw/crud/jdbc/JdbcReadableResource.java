@@ -123,23 +123,12 @@ public final class JdbcReadableResource implements ReadableResource<ResultSet> {
                 /* We need to get the Connection within run(), because any
                  * given Connection should only ever be used by one thread.
                  */
-                final Connection connection = connectionProvider.getConnection();
-                try {
-                    final PreparedStatement query = queryFactory.prepareStatement(connection);
-                    try {
-                        final ResultSet resultSet = query.executeQuery();
-                        try {
-                            while (resultSet.next() && !this.cancelled) {
-                                this.observer.onNext(resultSet);
-                            }
-                        } finally {
-                            resultSet.close();
-                        }
-                    } finally {
-                        query.close();
+                try (final Connection connection = connectionProvider.getConnection();
+                     final PreparedStatement query = queryFactory.prepareStatement(connection);
+                     final ResultSet resultSet = query.executeQuery()) {
+                    while (resultSet.next() && !this.cancelled) {
+                        this.observer.onNext(resultSet);
                     }
-                } finally {
-                    connection.close();
                 }
 
                 /* Call onCompleted() after closing everything, because any

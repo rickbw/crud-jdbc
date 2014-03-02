@@ -120,17 +120,10 @@ public final class JdbcUpdatableResource implements UpdatableResource<Iterable<?
                 /* We need to get the Connection within run(), because any
                  * given Connection should only ever be used by one thread.
                  */
-                final Connection connection = connectionProvider.getConnection();
-                try {
-                    final PreparedStatement update = this.updateFactory.prepareStatement(connection);
-                    try {
-                        final int numRowsModified = update.executeUpdate();
-                        this.observer.onNext(numRowsModified);
-                    } finally {
-                        update.close();
-                    }
-                } finally {
-                    connection.close();
+                try (final Connection connection = connectionProvider.getConnection();
+                     final PreparedStatement update = this.updateFactory.prepareStatement(connection)) {
+                    final int numRowsModified = update.executeUpdate();
+                    this.observer.onNext(numRowsModified);
                 }
 
                 /* Call onCompleted() after closing everything, because any
