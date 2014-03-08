@@ -23,14 +23,12 @@ import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
-import rickbw.crud.UpdatableResource;
-import rickbw.crud.util.rx.FutureSubscription;
 import com.google.common.base.Preconditions;
 
+import rickbw.crud.UpdatableResource;
 import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.util.functions.Func1;
+import rx.Subscriber;
+import rx.subscriptions.Subscriptions;
 
 
 public final class JdbcUpdatableResource implements UpdatableResource<Iterable<?>, Integer> {
@@ -59,13 +57,12 @@ public final class JdbcUpdatableResource implements UpdatableResource<Iterable<?
     @Override
     public Observable<Integer> update(final Iterable<?> updateParams) {
         final StatementFactory updateFactory = new StatementFactory(this.updateStatementTemplate, updateParams);
-        final Observable<Integer> result = Observable.create(new Func1<Observer<Integer>, Subscription>() {
+        final Observable<Integer> result = Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
-            public Subscription call(final Observer<Integer> observer) {
-                final Task task = new Task(updateFactory, observer);
+            public void call(final Subscriber<? super Integer> susbcriber) {
+                final Task task = new Task(updateFactory, susbcriber);
                 final Future<?> taskResult = executor.submit(task);
-                final Subscription sub = new FutureSubscription(taskResult);
-                return sub;
+                susbcriber.add(Subscriptions.from(taskResult));
             }
         });
         return result;
@@ -105,13 +102,13 @@ public final class JdbcUpdatableResource implements UpdatableResource<Iterable<?
 
     private final class Task implements Runnable {
         private final StatementFactory updateFactory;
-        private final Observer<Integer> observer;
+        private final Subscriber<? super Integer> subscriber;
 
-        public Task(final StatementFactory updateFactory, final Observer<Integer> observer) {
+        public Task(final StatementFactory updateFactory, final Subscriber<? super Integer> subscriber) {
             this.updateFactory = updateFactory;
             assert null != updateFactory;
-            this.observer = observer;
-            assert null != this.observer;
+            this.subscriber = subscriber;
+            assert null != this.subscriber;
         }
 
         @Override
@@ -123,16 +120,16 @@ public final class JdbcUpdatableResource implements UpdatableResource<Iterable<?
                 try (final Connection connection = connectionProvider.getConnection();
                      final PreparedStatement update = this.updateFactory.prepareStatement(connection)) {
                     final int numRowsModified = update.executeUpdate();
-                    this.observer.onNext(numRowsModified);
+                    this.subscriber.onNext(numRowsModified);
                 }
 
                 /* Call onCompleted() after closing everything, because any
                  * close method could throw, and we're not allowed to call
                  * both onCompleted() AND onError().
                  */
-                this.observer.onCompleted();
+                this.subscriber.onCompleted();
             } catch (final SQLException sqlx) {
-                this.observer.onError(sqlx);
+                this.subscriber.onError(sqlx);
             }
         }
     }

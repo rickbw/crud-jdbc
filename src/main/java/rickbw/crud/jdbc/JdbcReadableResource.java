@@ -18,20 +18,17 @@ package rickbw.crud.jdbc;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
-import rickbw.crud.ReadableResource;
-import rickbw.crud.util.rx.FutureSubscription;
 import com.google.common.base.Preconditions;
 
+import rickbw.crud.ReadableResource;
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
-import rx.util.functions.Func1;
 
 
 public final class JdbcReadableResource implements ReadableResource<ResultSet> {
@@ -60,13 +57,13 @@ public final class JdbcReadableResource implements ReadableResource<ResultSet> {
      */
     @Override
     public Observable<ResultSet> get() {
-        final Observable<ResultSet> result = Observable.create(new Func1<Observer<ResultSet>, Subscription>() {
+        final Observable<ResultSet> result = Observable.create(new Observable.OnSubscribe<ResultSet>() {
             @Override
-            public Subscription call(final Observer<ResultSet> observer) {
-                final Task task = new Task(observer);
+            public void call(final Subscriber<? super ResultSet> subscriber) {
+                final Task task = new Task(subscriber);
                 final Future<?> taskResult = executor.submit(task);
                 final Subscription sub = new TaskSubscription(task, taskResult);
-                return sub;
+                subscriber.add(sub);
             }
         });
         return result;
@@ -105,12 +102,12 @@ public final class JdbcReadableResource implements ReadableResource<ResultSet> {
     }
 
     private final class Task implements Runnable {
-        private final Observer<ResultSet> observer;
+        private final Subscriber<? super ResultSet> subscriber;
         private volatile boolean cancelled = false;
 
-        public Task(final Observer<ResultSet> observer) {
-            this.observer = observer;
-            assert null != this.observer;
+        public Task(final Subscriber<? super ResultSet> subscriber) {
+            this.subscriber = subscriber;
+            assert null != this.subscriber;
         }
 
         public void cancel() {
@@ -127,7 +124,7 @@ public final class JdbcReadableResource implements ReadableResource<ResultSet> {
                      final PreparedStatement query = queryFactory.prepareStatement(connection);
                      final ResultSet resultSet = query.executeQuery()) {
                     while (resultSet.next() && !this.cancelled) {
-                        this.observer.onNext(resultSet);
+                        this.subscriber.onNext(resultSet);
                     }
                 }
 
@@ -135,26 +132,34 @@ public final class JdbcReadableResource implements ReadableResource<ResultSet> {
                  * close method could throw, and we're not allowed to call
                  * both onCompleted() AND onError().
                  */
-                this.observer.onCompleted();
-            } catch (final SQLException sqlx) {
-                this.observer.onError(sqlx);
+                this.subscriber.onCompleted();
+            } catch (final Throwable sqlx) {
+                this.subscriber.onError(sqlx);
             }
         }
     }
 
-    private static final class TaskSubscription extends FutureSubscription {
+    private static final class TaskSubscription implements Subscription {
+        private static final boolean mayInterruptIfRunning = true;
+        private final Future<?> taskResult;
         private final Task task;
 
         public TaskSubscription(final Task task, final Future<?> taskResult) {
-            super(taskResult);
+            this.taskResult = taskResult;
+            assert this.taskResult != null;
             this.task = task;
-            assert null != this.task;
+            assert this.task != null;
         }
 
         @Override
         public void unsubscribe() {
-            super.unsubscribe();
+            this.taskResult.cancel(mayInterruptIfRunning);
             this.task.cancel();
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return this.taskResult.isCancelled();
         }
     }
 
