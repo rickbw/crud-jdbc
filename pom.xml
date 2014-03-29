@@ -19,82 +19,67 @@ the License.
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>rickbw</groupId>
     <artifactId>crud-jdbc</artifactId>
-    <name>Crud JDBC Implementation</name>
+    <packaging>jar</packaging>
     <version>0.2-SNAPSHOT</version>
+
+    <name>Crud JDBC Implementation</name>
     <description>
         An implementation of the Crud API based on JDBC.
     </description>
+    <developers>
+        <developer>
+            <id>rick</id>
+            <name>Rick Warren</name>
+            <url>https://github.com/rickbw/</url>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo,manual</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:rickbw/crud-jdbc.git</connection>
+        <developerConnection>scm:git:git@github.com:rickbw/crud-jdbc.git</developerConnection>
+        <url>https://github.com/rickbw/crud-jdbc/</url>
+    </scm>
 
     <properties>
+        <!--
+        For some byzantine reason, if you don't have this, filtering when
+        running the build on Mac will default to MacRoman which is bad; see:
+        http://www.redleopard.com/2009/04/macroman-encoding-creeps-into-maven/
+        -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <rxjava-version>0.17.0-RC7</rxjava-version>
-    </properties>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+        <crud-api.version>0.2-SNAPSHOT</crud-api.version>
+    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.netflix.rxjava</groupId>
-            <artifactId>rxjava-core</artifactId>
-            <version>${rxjava-version}</version>
+            <groupId>rickbw</groupId>
+            <artifactId>crud-api</artifactId>
+            <version>${crud-api.version}</version>
         </dependency>
-
+    
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.5</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>rickbw</groupId>
-            <artifactId>crud-api</artifactId>
-            <version>0.2-SNAPSHOT</version>
-        </dependency>
     </dependencies>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </reporting>
 
     <build>
         <plugins>
@@ -119,15 +104,6 @@ the License.
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <skip>false</skip>
-                    <disableXmlReport>false</disableXmlReport>
-                    <argLine>-Xms512m -Xmx1024m -XX:MaxPermSize=256m</argLine>
-                </configuration>
-            </plugin>            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -182,4 +158,47 @@ the License.
            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
