@@ -12,7 +12,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package rickbw.crud.jdbc;
 
 import java.util.concurrent.ExecutorService;
@@ -21,7 +20,7 @@ import javax.sql.DataSource;
 
 import rickbw.crud.UpdatableResource;
 import rickbw.crud.UpdatableResourceProvider;
-import com.google.common.base.Preconditions;
+import rickbw.crud.util.Preconditions;
 
 
 public final class JdbcUpdatableResourceProvider

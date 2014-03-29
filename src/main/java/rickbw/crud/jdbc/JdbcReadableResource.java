@@ -12,7 +12,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package rickbw.crud.jdbc;
 
 import java.sql.Connection;
@@ -23,9 +22,8 @@ import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
-import com.google.common.base.Preconditions;
-
 import rickbw.crud.ReadableResource;
+import rickbw.crud.util.Preconditions;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;

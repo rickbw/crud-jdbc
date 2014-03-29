@@ -18,22 +18,35 @@ package rickbw.crud.jdbc;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import rickbw.crud.util.Preconditions;
 
 
 public final class StatementFactory {
 
     private final String statementString;
-    private final ImmutableList<Object> statementParams;
+    private final List<Object> statementParams;
 
 
     public StatementFactory(final String statementString, final Iterable<?> statementParams) {
         Preconditions.checkArgument(!statementString.isEmpty(), "empty statement string");
         this.statementString = statementString;
-        this.statementParams = ImmutableList.copyOf(statementParams);
+
+        final List<Object> paramsCopy;
+        if (statementParams instanceof Collection<?>) {
+            paramsCopy = new ArrayList<>((Collection<?>) statementParams);
+        } else {
+            paramsCopy = new ArrayList<>();
+            for (final Object param : statementParams) {
+                paramsCopy.add(param);
+            }
+        }
+        this.statementParams = Collections.unmodifiableList(paramsCopy);
     }
 
     public PreparedStatement prepareStatement(final Connection connection) throws SQLException {

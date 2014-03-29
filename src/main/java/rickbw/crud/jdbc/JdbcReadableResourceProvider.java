@@ -12,7 +12,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package rickbw.crud.jdbc;
 
 import java.sql.ResultSet;
@@ -22,7 +21,7 @@ import javax.sql.DataSource;
 
 import rickbw.crud.ReadableResource;
 import rickbw.crud.ReadableResourceProvider;
-import com.google.common.base.Preconditions;
+import rickbw.crud.util.Preconditions;
 
 
 public final class JdbcReadableResourceProvider
