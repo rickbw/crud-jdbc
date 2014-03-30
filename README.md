@@ -17,6 +17,7 @@ See Also
 * The [Crud API](https://github.com/rickbw/crud-api) project (`crud-api`) defines the core abstractions and the public API on which this project is based.
 * `crud-api` is built on top of [RxJava](https://github.com/Netflix/RxJava/).
 * [Crud HTTP](https://github.com/rickbw/crud-http) (`crud-http`) is a sister project to this project, implemented for HTTP instead of JDBC.
+* [Crud Voldemort](https://github.com/rickbw/crud-voldemort) (`crud-voldemort`) is a sister project to this project, implemented for [Project Voldemort](http://www.project-voldemort.com) instead of JDBC.
 
 
 Copyright and License
