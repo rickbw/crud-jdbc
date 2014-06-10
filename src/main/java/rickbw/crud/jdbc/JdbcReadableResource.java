@@ -17,13 +17,13 @@ package rickbw.crud.jdbc;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
 import rickbw.crud.ReadableResource;
-import rickbw.crud.util.Preconditions;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -41,9 +41,9 @@ public final class JdbcReadableResource implements ReadableResource<ResultSet> {
             final DataSource connectionProvider,
             final StatementFactory queryFactory,
             final ExecutorService executor) {
-        this.connectionProvider = Preconditions.checkNotNull(connectionProvider);
-        this.queryFactory = Preconditions.checkNotNull(queryFactory);
-        this.executor = Preconditions.checkNotNull(executor);
+        this.connectionProvider = Objects.requireNonNull(connectionProvider);
+        this.queryFactory = Objects.requireNonNull(queryFactory);
+        this.executor = Objects.requireNonNull(executor);
     }
 
     /**

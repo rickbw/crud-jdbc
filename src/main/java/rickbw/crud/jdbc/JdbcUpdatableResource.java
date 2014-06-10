@@ -17,13 +17,15 @@ package rickbw.crud.jdbc;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
+import com.google.common.base.Preconditions;
+
 import rickbw.crud.UpdatableResource;
-import rickbw.crud.util.Preconditions;
 import rx.Observable;
 import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
@@ -41,12 +43,12 @@ public final class JdbcUpdatableResource implements UpdatableResource<Iterable<?
             final DataSource connectionProvider,
             final String updateStatementTemplate,
             final ExecutorService executor) {
-        this.connectionProvider = Preconditions.checkNotNull(connectionProvider);
+        this.connectionProvider = Objects.requireNonNull(connectionProvider);
         this.updateStatementTemplate = updateStatementTemplate;
         Preconditions.checkArgument(
                 !this.updateStatementTemplate.isEmpty(),
                 "empty statement template");
-        this.executor = Preconditions.checkNotNull(executor);
+        this.executor = Objects.requireNonNull(executor);
     }
 
     /**

@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import rickbw.crud.util.Preconditions;
+import com.google.common.base.Preconditions;
 
 
 public final class StatementFactory {

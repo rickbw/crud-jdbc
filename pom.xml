@@ -63,7 +63,7 @@ the License.
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <crud-api.version>0.3-SNAPSHOT</crud-api.version>
+        <crud-api.version>0.4-SNAPSHOT</crud-api.version>
     </properties>
 
     <dependencies>
