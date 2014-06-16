@@ -23,7 +23,7 @@ import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
-import rickbw.crud.ReadableResource;
+import crud.ReadableResource;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;

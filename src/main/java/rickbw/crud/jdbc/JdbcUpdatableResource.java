@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 
 import com.google.common.base.Preconditions;
 
-import rickbw.crud.UpdatableResource;
+import crud.UpdatableResource;
 import rx.Observable;
 import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
