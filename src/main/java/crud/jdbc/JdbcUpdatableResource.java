@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package rickbw.crud.jdbc;
+package crud.jdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

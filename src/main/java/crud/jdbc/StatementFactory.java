@@ -13,7 +13,7 @@
  * the License.
  */
 
-package rickbw.crud.jdbc;
+package crud.jdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
