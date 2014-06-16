@@ -27,6 +27,7 @@ import crud.ReadableResource;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 
 public final class JdbcReadableResource implements ReadableResource<ResultSet> {
@@ -59,9 +60,9 @@ public final class JdbcReadableResource implements ReadableResource<ResultSet> {
             @Override
             public void call(final Subscriber<? super ResultSet> subscriber) {
                 final Task task = new Task(subscriber);
+                subscriber.add(new TaskSubscription(task));
                 final Future<?> taskResult = executor.submit(task);
-                final Subscription sub = new TaskSubscription(task, taskResult);
-                subscriber.add(sub);
+                subscriber.add(Subscriptions.from(taskResult));
             }
         });
         return result;
@@ -138,26 +139,23 @@ public final class JdbcReadableResource implements ReadableResource<ResultSet> {
     }
 
     private static final class TaskSubscription implements Subscription {
-        private static final boolean mayInterruptIfRunning = true;
-        private final Future<?> taskResult;
         private final Task task;
+        private volatile boolean cancelled = false;
 
-        public TaskSubscription(final Task task, final Future<?> taskResult) {
-            this.taskResult = taskResult;
-            assert this.taskResult != null;
+        public TaskSubscription(final Task task) {
             this.task = task;
             assert this.task != null;
         }
 
         @Override
         public void unsubscribe() {
-            this.taskResult.cancel(mayInterruptIfRunning);
             this.task.cancel();
+            this.cancelled = true;
         }
 
         @Override
         public boolean isUnsubscribed() {
-            return this.taskResult.isCancelled();
+            return this.cancelled;
         }
     }
 
