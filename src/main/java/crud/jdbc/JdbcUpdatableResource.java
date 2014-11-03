@@ -25,13 +25,13 @@ import javax.sql.DataSource;
 
 import com.google.common.base.Preconditions;
 
-import crud.spi.UpdatableResource;
+import crud.spi.UpdatableSpec;
 import rx.Observable;
 import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
 
 
-public final class JdbcUpdatableResource implements UpdatableResource<Iterable<?>, Integer> {
+public final class JdbcUpdatableResource implements UpdatableSpec<Iterable<?>, Integer> {
 
     private final DataSource connectionProvider;
     private final String updateStatementTemplate;

@@ -23,14 +23,14 @@ import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
-import crud.spi.ReadableResource;
+import crud.spi.ReadableSpec;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
 
-public final class JdbcReadableResource implements ReadableResource<ResultSet> {
+public final class JdbcReadableResource implements ReadableSpec<ResultSet> {
 
     private final DataSource connectionProvider;
     private final StatementFactory queryFactory;

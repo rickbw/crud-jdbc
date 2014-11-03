@@ -19,12 +19,12 @@ import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 
-import crud.spi.UpdatableResource;
-import crud.spi.UpdatableResourceProvider;
+import crud.spi.UpdatableSpec;
+import crud.spi.UpdatableProviderSpec;
 
 
 public final class JdbcUpdatableResourceProvider
-implements UpdatableResourceProvider<String, Iterable<?>, Integer> {
+implements UpdatableProviderSpec<String, Iterable<?>, Integer> {
 
     private final DataSource dataSource;
     private final ExecutorService executor;
@@ -38,8 +38,8 @@ implements UpdatableResourceProvider<String, Iterable<?>, Integer> {
     }
 
     @Override
-    public UpdatableResource<Iterable<?>, Integer> get(final String updateStatementTemplate) {
-        final UpdatableResource<Iterable<?>, Integer> resource = new JdbcUpdatableResource(
+    public UpdatableSpec<Iterable<?>, Integer> get(final String updateStatementTemplate) {
+        final UpdatableSpec<Iterable<?>, Integer> resource = new JdbcUpdatableResource(
                 this.dataSource,
                 updateStatementTemplate,
                 this.executor);
