@@ -28,7 +28,10 @@ import rx.Observable;
 import rx.functions.Func1;
 
 
-public class EntitiesById<T> {
+/**
+ * @see IdentifierLoadAccess
+ */
+public class ObservableIdentifierLoadAccess<T> {
 
     private final IdentifierLoadAccess access;
     private final Class<T> clazz;
@@ -38,57 +41,51 @@ public class EntitiesById<T> {
 
 
     /**
-     * @return  An {@link EntitiesById} identical to this one, but using the
+     * @return  An {@link ObservableIdentifierLoadAccess} identical to this one, but using the
      *          given {@link LockOptions}.
      */
-    public final EntitiesById<T> withOptions(final LockOptions lockOptions) {
+    public final ObservableIdentifierLoadAccess<T> with(final LockOptions lockOptions) {
         final IdentifierLoadAccess newAccess = this.access.with(lockOptions);
-        return new EntitiesById<>(newAccess, this.clazz);
+        return new ObservableIdentifierLoadAccess<>(newAccess, this.clazz);
     }
 
-    public final Func1<Serializable, Observable<T>> get() {
+    public final Func1<Serializable, Observable<T>> getter() {
         if (this.cachedGetFunc == null) {
-            this.cachedGetFunc = new GetFunction();
+            this.cachedGetFunc = new Func1<Serializable, Observable<T>>() {
+                @Override
+                public Observable<T> call(final Serializable id) {
+                    @Nullable final Object entity = ObservableIdentifierLoadAccess.this.access.getReference(id);
+                    if (entity != null) {
+                        return Observable.just(ObservableIdentifierLoadAccess.this.clazz.cast(entity));
+                    } else {
+                        return Observable.empty();
+                    }
+                }
+            };
         }
         return this.cachedGetFunc;
     }
 
-    public final Func1<Serializable, T> load() {
+    public final Func1<Serializable, T> loader() {
         if (this.cachedLoadFunc == null) {
-            this.cachedLoadFunc = new LoadFunction();
+            this.cachedLoadFunc = new Func1<Serializable, T>() {
+                @Override
+                public T call(final Serializable id) {
+                    @Nonnull final Object entity = ObservableIdentifierLoadAccess.this.access.load(id);
+                    return ObservableIdentifierLoadAccess.this.clazz.cast(entity);
+                }
+            };
         }
         return this.cachedLoadFunc;
     }
 
-    /*package*/ EntitiesById(final Session session, final Class<T> clazz) {
+    /*package*/ ObservableIdentifierLoadAccess(final Session session, final Class<T> clazz) {
         this(session.byId(clazz), clazz);
     }
 
-    private EntitiesById(final IdentifierLoadAccess access, final Class<T> clazz) {
+    private ObservableIdentifierLoadAccess(final IdentifierLoadAccess access, final Class<T> clazz) {
         this.access = Objects.requireNonNull(access);
         this.clazz = Objects.requireNonNull(clazz);
-    }
-
-
-    private final class LoadFunction implements Func1<Serializable, T> {
-        @Override
-        public T call(final Serializable id) {
-            @Nonnull final Object entity = EntitiesById.this.access.load(id);
-            return EntitiesById.this.clazz.cast(entity);
-        }
-    }
-
-
-    private final class GetFunction implements Func1<Serializable, Observable<T>> {
-        @Override
-        public Observable<T> call(final Serializable id) {
-            @Nullable final Object entity = EntitiesById.this.access.getReference(id);
-            if (entity != null) {
-                return Observable.just(entity).cast(EntitiesById.this.clazz);
-            } else {
-                return Observable.empty();
-            }
-        }
     }
 
 }
