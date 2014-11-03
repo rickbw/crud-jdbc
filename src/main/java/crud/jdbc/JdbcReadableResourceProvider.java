@@ -20,8 +20,8 @@ import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 
-import crud.ReadableResource;
-import crud.ReadableResourceProvider;
+import crud.spi.ReadableResource;
+import crud.spi.ReadableResourceProvider;
 
 
 public final class JdbcReadableResourceProvider

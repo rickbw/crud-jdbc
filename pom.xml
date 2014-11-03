@@ -23,7 +23,7 @@ the License.
     <groupId>rickbw</groupId>
     <artifactId>crud-jdbc</artifactId>
     <packaging>jar</packaging>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
 
     <name>Crud JDBC Implementation</name>
     <description>
@@ -63,7 +63,7 @@ the License.
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <crud-api.version>0.5-SNAPSHOT</crud-api.version>
+        <crud-api.version>0.6-SNAPSHOT</crud-api.version>
     </properties>
 
     <dependencies>

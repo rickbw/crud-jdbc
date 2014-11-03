@@ -19,8 +19,8 @@ import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 
-import crud.UpdatableResource;
-import crud.UpdatableResourceProvider;
+import crud.spi.UpdatableResource;
+import crud.spi.UpdatableResourceProvider;
 
 
 public final class JdbcUpdatableResourceProvider
