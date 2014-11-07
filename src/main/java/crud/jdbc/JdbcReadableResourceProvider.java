@@ -20,12 +20,12 @@ import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 
-import crud.spi.ReadableProviderSpec;
-import crud.spi.ReadableSpec;
+import crud.spi.GettableProviderSpec;
+import crud.spi.GettableSpec;
 
 
 public final class JdbcReadableResourceProvider
-implements ReadableProviderSpec<StatementFactory, ResultSet> {
+implements GettableProviderSpec<StatementFactory, ResultSet> {
 
     private final DataSource dataSource;
     private final ExecutorService executor;
@@ -39,8 +39,8 @@ implements ReadableProviderSpec<StatementFactory, ResultSet> {
     }
 
     @Override
-    public ReadableSpec<ResultSet> reader(final StatementFactory key) {
-        final ReadableSpec<ResultSet> resource = new JdbcReadableResource(
+    public GettableSpec<ResultSet> getter(final StatementFactory key) {
+        final GettableSpec<ResultSet> resource = new JdbcReadableResource(
                 this.dataSource,
                 key,
                 this.executor);
