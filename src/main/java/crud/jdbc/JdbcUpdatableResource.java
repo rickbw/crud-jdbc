@@ -55,7 +55,7 @@ public final class JdbcUpdatableResource implements UpdatableSpec<Object, Intege
      * The integer result indicates the number of rows modified by the update.
      */
     @Override
-    public Observable<Integer> update(final Observable<?> updateParams) {
+    public Observable<Integer> update(final Observable<Object> updateParams) {
         final StatementFactory updateFactory = new StatementFactory(this.updateStatementTemplate, updateParams);
         final Observable<Integer> result = Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
