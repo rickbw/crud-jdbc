@@ -24,7 +24,7 @@ import crud.spi.UpdatableSpec;
 
 
 public final class JdbcUpdatableResourceProvider
-implements UpdatableProviderSpec<String, Iterable<?>, Integer> {
+implements UpdatableProviderSpec<String, Object, Integer> {
 
     private final DataSource dataSource;
     private final ExecutorService executor;
@@ -38,8 +38,8 @@ implements UpdatableProviderSpec<String, Iterable<?>, Integer> {
     }
 
     @Override
-    public UpdatableSpec<Iterable<?>, Integer> updater(final String updateStatementTemplate) {
-        final UpdatableSpec<Iterable<?>, Integer> resource = new JdbcUpdatableResource(
+    public UpdatableSpec<Object, Integer> updater(final String updateStatementTemplate) {
+        final UpdatableSpec<Object, Integer> resource = new JdbcUpdatableResource(
                 this.dataSource,
                 updateStatementTemplate,
                 this.executor);

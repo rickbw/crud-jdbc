@@ -31,7 +31,7 @@ import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
 
 
-public final class JdbcUpdatableResource implements UpdatableSpec<Iterable<?>, Integer> {
+public final class JdbcUpdatableResource implements UpdatableSpec<Object, Integer> {
 
     private final DataSource connectionProvider;
     private final String updateStatementTemplate;
@@ -55,7 +55,7 @@ public final class JdbcUpdatableResource implements UpdatableSpec<Iterable<?>, I
      * The integer result indicates the number of rows modified by the update.
      */
     @Override
-    public Observable<Integer> update(final Iterable<?> updateParams) {
+    public Observable<Integer> update(final Observable<?> updateParams) {
         final StatementFactory updateFactory = new StatementFactory(this.updateStatementTemplate, updateParams);
         final Observable<Integer> result = Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override

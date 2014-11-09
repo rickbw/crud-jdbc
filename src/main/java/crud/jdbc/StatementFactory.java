@@ -18,42 +18,32 @@ package crud.jdbc;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Objects;
 
 import com.google.common.base.Preconditions;
+
+import rx.Observable;
 
 
 public final class StatementFactory {
 
     private final String statementString;
-    private final List<Object> statementParams;
+    private final Observable<?> statementParams;
 
 
-    public StatementFactory(final String statementString, final Iterable<?> statementParams) {
+    public StatementFactory(final String statementString, final Observable<?> statementParams) {
         Preconditions.checkArgument(!statementString.isEmpty(), "empty statement string");
         this.statementString = statementString;
-
-        final List<Object> paramsCopy;
-        if (statementParams instanceof Collection<?>) {
-            paramsCopy = new ArrayList<>((Collection<?>) statementParams);
-        } else {
-            paramsCopy = new ArrayList<>();
-            for (final Object param : statementParams) {
-                paramsCopy.add(param);
-            }
-        }
-        this.statementParams = Collections.unmodifiableList(paramsCopy);
+        this.statementParams = Objects.requireNonNull(statementParams);
     }
 
     public PreparedStatement prepareStatement(final Connection connection) throws SQLException {
         @SuppressWarnings("resource")   // don't close on success
         final PreparedStatement statement = connection.prepareStatement(this.statementString);
         try {
-            final Iterator<Object> params = this.statementParams.iterator();
+            // XXX: Too bad about the blocking here.
+            final Iterator<?> params = this.statementParams.toBlocking().getIterator();
             for (int i = 1; params.hasNext(); ++i) {
                 final Object param = params.next();
                 statement.setObject(i, param);
@@ -104,13 +94,9 @@ public final class StatementFactory {
 
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder(getClass().getSimpleName());
-        buf.append(" [statementString=").append(this.statementString);
-        if (!this.statementParams.isEmpty()) {
-            buf.append(", statementParams=").append(this.statementParams);
-        }
-        buf.append(']');
-        return buf.toString();
+        return getClass().getSimpleName()
+                + " [statementString=" + this.statementString
+                + ']';
     }
 
 }
