@@ -20,12 +20,12 @@ import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 
-import crud.spi.GettableProviderSpec;
+import crud.spi.GettableSetSpec;
 import crud.spi.GettableSpec;
 
 
 public final class JdbcReadableResourceProvider
-implements GettableProviderSpec<StatementFactory, ResultSet> {
+implements GettableSetSpec<StatementFactory, ResultSet> {
 
     private final DataSource dataSource;
     private final ExecutorService executor;

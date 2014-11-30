@@ -19,12 +19,12 @@ import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 
-import crud.spi.UpdatableProviderSpec;
+import crud.spi.UpdatableSetSpec;
 import crud.spi.UpdatableSpec;
 
 
 public final class JdbcUpdatableResourceProvider
-implements UpdatableProviderSpec<String, Object, Integer> {
+implements UpdatableSetSpec<String, Object, Integer> {
 
     private final DataSource dataSource;
     private final ExecutorService executor;
