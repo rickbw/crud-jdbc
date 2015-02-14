@@ -33,21 +33,20 @@ public class ObservableTransaction implements AutoCloseable {
     private final Transaction transaction;
 
     private boolean open = true;
-    private Func1<Object, Object> cachedDeleter = null;
-    private Func1<Object, Object> cachedMerger = null;
-    private Func1<Object, Object> cachedPersister = null;
-    private Func1<Object, Serializable> cachedSaver = null;
-    private Func1<Object, Object> cachedSaveOrUpdater = null;
-    private Func1<Object, Object> cachedUpdater = null;
+    private transient Func1<Object, Object> cachedDeleter = null;
+    private transient Func1<Object, Object> cachedMerger = null;
+    private transient Func1<Object, Object> cachedPersister = null;
+    private transient Func1<Object, Serializable> cachedSaver = null;
+    private transient Func1<Object, Object> cachedSaveOrUpdater = null;
+    private transient Func1<Object, Object> cachedUpdater = null;
 
 
     /**
      * Query one or more objects of the given class by their unique IDs, as
      * by {@link IdentifierLoadAccess}. Eventually, you will call
-     * {@link EntitiesById#fetch()}, for use with
-     * {@link Observable#flatMap(Func1)}.
+     * {@link EntitiesById#get()} or {@link EntitiesById#load()}.
      */
-    public <T> EntitiesById<T> byId(final Class<T> clazz) {
+    public <T> EntitiesById<T> entitiesOfType(final Class<T> clazz) {
         return new EntitiesById<>(this.session, clazz);
     }
 
