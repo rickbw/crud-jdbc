@@ -24,6 +24,7 @@ import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.IdentifierLoadAccess;
 import org.hibernate.LobHelper;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionEventListener;
 import org.hibernate.Transaction;
@@ -203,6 +204,16 @@ public class ObservableSession implements AutoCloseable {
     public ObservableCriteria createCriteria(final String entityName, final String alias) {
         final Criteria criteria = this.session.createCriteria(entityName, alias);
         return new ObservableCriteria(criteria);
+    }
+
+    public ObservableQuery getNamedQuery(final String queryName) {
+        final Query query = this.session.getNamedQuery(queryName);
+        return new ObservableQuery(query);
+    }
+
+    public ObservableQuery createQuery(final String queryString) {
+        final Query query = this.session.createQuery(queryString);
+        return new ObservableQuery(query);
     }
 
     public void cancelQuery() {
