@@ -17,12 +17,14 @@ package crud.hibernate;
 import org.hibernate.Session;
 
 
-/*package*/ final class CurrentObservableSession extends ObservableSession {
+public class CurrentObservableSession extends ObservableSession {
 
     /**
      * Don't close the underlying Hibernate {@link Session}: we don't
-     * own its life cycle.
+     * own its life cycle. This method is deprecated to emphasize that
+     * callers with static knowledge of this type should not call it.
      */
+    @Deprecated
     @Override
     public void close() {
         // do nothing

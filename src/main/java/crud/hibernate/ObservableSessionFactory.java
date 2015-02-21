@@ -36,7 +36,7 @@ public class ObservableSessionFactory implements AutoCloseable {
     }
 
     // TODO: Unify with SessionBuilder
-    public ObservableSession currentSession() {
+    public CurrentObservableSession currentSession() {
         final Session delegate = this.sessionFactory.getCurrentSession();
         return new CurrentObservableSession(delegate);
     }
