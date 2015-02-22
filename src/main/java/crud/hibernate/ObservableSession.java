@@ -15,12 +15,14 @@
 package crud.hibernate;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
+import org.hibernate.Filter;
 import org.hibernate.FlushMode;
 import org.hibernate.IdentifierLoadAccess;
 import org.hibernate.LobHelper;
@@ -29,6 +31,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionEventListener;
 import org.hibernate.Transaction;
 import org.hibernate.TypeHelper;
+import org.hibernate.stat.SessionStatistics;
 
 import rx.Observable;
 import rx.functions.Func1;
@@ -159,7 +162,7 @@ public class ObservableSession implements AutoCloseable {
      *          {@link Session#getIdentifier(Object)}. For use with
      *          {@link Observable#map(Func1)}.
      */
-    public Func1<Object, Serializable> identifierGetter() {
+    public Func1<Object, Serializable> identifier() {
         return new Func1<Object, Serializable>() {
             @Override
             public Serializable call(final Object entity) {
@@ -274,6 +277,42 @@ public class ObservableSession implements AutoCloseable {
 
     public void addEventListeners(final SessionEventListener... listeners) {
         this.session.addEventListeners(listeners);
+    }
+
+    public Filter enableFilter(final String filterName) {
+        return this.session.enableFilter(filterName);
+    }
+
+    public Filter getEnabledFilter(final String filterName) {
+        return this.session.getEnabledFilter(filterName);
+    }
+
+    public void disableFilter(final String filterName) {
+        this.session.disableFilter(filterName);
+    }
+
+    public SessionStatistics getStatistics() {
+        return this.session.getStatistics();
+    }
+
+    public Connection disconnect() {
+        return this.session.disconnect();
+    }
+
+    public void reconnect(final Connection connection) {
+        this.session.reconnect(connection);
+    }
+
+    public boolean isFetchProfileEnabled(final String name) {
+        return this.session.isFetchProfileEnabled(name);
+    }
+
+    public void enableFetchProfile(final String name) {
+        this.session.enableFetchProfile(name);
+    }
+
+    public void disableFetchProfile(final String name) {
+        this.session.disableFetchProfile(name);
     }
 
     @Override
